@@ -23,7 +23,7 @@ function signroi = ExtractSign(image)
     % Obtain properties for connected components
     stats = regionprops('table', redBW, 'Centroid', 'Area', 'EquivDiameter'); 
 
-    % Remove any regions less than 100 pixels in area
+    % Remove any regions less than 200 pixels in area
     toDelete = stats.Area < 200;
     stats(toDelete,:) = [];
 

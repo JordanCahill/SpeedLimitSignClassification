@@ -29,9 +29,9 @@ folder = '30';
 if strcmp(folder,'all')
     ClassifyAll();
 else
-    ClassifyFolder(folder, 1);  % If second variable set to 1, system will 
-end                             % skip images where it thinks it could not 
-                                % detect a digit (for debugging and
-                                % performance testing)
+    ClassifyFolder(folder, 1);  % If second parameter is set to 1, the system
+end                             % will skip images where it thinks no digit 
+                                % was detected (for debugging and testing)
+                               
 
 

@@ -12,7 +12,7 @@ function ClassifyFolder(target, skipMissingDigits)
     numImages = length(images);
     
     % Running counters
-    TP = 0;                     % True Positives
+    correctMatches = 0;         % Number of correctly identified images
     runningConfidence = 0;      % Max value from background subtraction
 
     for i = 1:numImages
@@ -40,7 +40,7 @@ function ClassifyFolder(target, skipMissingDigits)
         [bestMatch, confidence] = CompareImages(digit);
 
         if bestMatch == groundTruth % Evaluate decision
-            TP = TP + 1;   
+            correctMatches = correctMatches + 1;   
             result = 'Correct';
         else
             result = 'Incorrect';
@@ -59,9 +59,9 @@ function ClassifyFolder(target, skipMissingDigits)
     if skipMissingDigits == 1
         fprintf('Note: Skipped images where digits were not detected\n');
     end
-    accuracy = TP/numImages*100;
+    accuracy = correctMatches/numImages*100;
     avgConfidence = runningConfidence/numImages;
-    fprintf('Accuracy: %.2f%% (%d/%d)\n', accuracy, TP, numImages);
+    fprintf('Accuracy: %.2f%% (%d/%d)\n', accuracy, correctMatches, numImages);
     fprintf('Mean Confidence: %.2f%%\n', avgConfidence);
 
 end

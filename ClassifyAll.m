@@ -1,15 +1,17 @@
 % Detects and classifies the images in the 'all' folder and prints the
 % combined results to the command line.
 function ClassifyAll()
-
+    
+    numFolders = 5;
     totalAccuracy = 0;
     totalNumImages = 0;
     totalConfidence = 0;
 
     % Key-value pairs to map the performance of each folder (to print later)
-    performanceForFolder = containers.Map('KeyType','char','ValueType','double');
+    accuracyForFolder = containers.Map('KeyType','char','ValueType','double');
+    confidenceForFolder = containers.Map('KeyType','char','ValueType','double');
 
-    for j = 1:5 % Loop through each folder loading directory and groundTruth value
+    for j = 1:numFolders % Loop through each folder loading directory and groundTruth value
         switch j
             case 1
                 targetFolder = 'images/100/';
@@ -33,7 +35,7 @@ function ClassifyAll()
         
         
         % Running counters
-        TP = 0;                     % True Positives
+        correctMatches = 0;			% Number of correctly identified signs
         runningConfidence = 0;      % Max value from background subtraction
         totalNumImages = totalNumImages + numImages;
         
@@ -57,7 +59,7 @@ function ClassifyAll()
             [bestMatch, confidence] = CompareImages(digit);
 
             if bestMatch == groundTruth % Evaluate decision
-                TP = TP + 1;   
+                correctMatches = correctMatches + 1;   
                 result = 'Correct';
             else
                 result = 'Incorrect';
@@ -72,33 +74,36 @@ function ClassifyAll()
         end
 
         % Calculate and print stats for the current folder
-        accuracy = TP/numImages*100;
+        accuracy = correctMatches/numImages*100;
         avgConfidence = runningConfidence/numImages;
         
         fprintf('\nStats for target folder: %s\n', targetFolder);
-        fprintf('Accuracy: %.2f%% (%d/%d)\n', accuracy, TP, numImages);
+        fprintf('Accuracy: %.2f%% (%d/%d)\n', accuracy, correctMatches, numImages);
         fprintf('Mean Confidence: %.2f%%\n', avgConfidence);
         
-        performanceForFolder(targetFolder) = accuracy;
+        accuracyForFolder(targetFolder) = accuracy;
+        confidenceForFolder(targetFolder) = avgConfidence;
         
         totalAccuracy = totalAccuracy + accuracy;
-        totalConfidence = totalConfidence + confidence;
+        totalConfidence = totalConfidence + avgConfidence;
 
     end
 
     % Calculate and print stats for the overall system
-    totalAccuracyAvg = totalAccuracy/5;
-    totalConfidenceAvg = totalConfidence/5;
+    totalAccuracyAvg = totalAccuracy/numFolders;
+    totalConfidenceAvg = totalConfidence/numFolders;
     
     fprintf('\n\n\nOverall System Stats:\n\n');
     
-    for k = keys(performanceForFolder)
+    for k = keys(accuracyForFolder)
         folderKey = k{1};
         fprintf('Accuracy for target folder "%s": %.f%%.\n', ...
-            folderKey, performanceForFolder(folderKey));
+            folderKey, accuracyForFolder(folderKey));
+        fprintf('Confidence for target folder "%s": %.f%%.\n\n', ...
+            folderKey, confidenceForFolder(folderKey));
     end
     
-    fprintf('\nOverall System Accuracy: %.2f%% (%d/%d)\n', totalAccuracyAvg);
+    fprintf('Overall System Accuracy: %.2f%%\n', totalAccuracyAvg);
     fprintf('Overall System Confidence: %.2f%%\n', totalConfidenceAvg);
 
 end
